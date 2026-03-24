@@ -1,0 +1,74 @@
+package com.pao.laboratory05.audit;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+
+public class AngajatService {
+
+    private Angajat[] angajati;
+
+    private AngajatService() {
+        angajati = new Angajat[0];
+    }
+
+    private AuditEntry[] auditLog = new AuditEntry[0];
+
+    private static class Holder {
+        private static final AngajatService INSTANCE = new AngajatService();
+    }
+
+    public static AngajatService getInstance() {
+        return AngajatService.Holder.INSTANCE;
+    }
+
+    public void addAngajat(Angajat a) {
+        Angajat[] newArr = new Angajat[angajati.length + 1];
+        System.arraycopy(angajati, 0, newArr, 0, angajati.length);
+        newArr[angajati.length] = a;
+        angajati = newArr;
+        System.out.println("Angajat adăugat: " + a.getNume());
+        logAction("ADD", a.getNume());
+    }
+
+    public void printAll() {
+        for (Angajat a : angajati) {
+            System.out.println(a);
+        }
+    }
+
+    public void listBySalary() {
+        Angajat[] copy = angajati.clone();
+        Arrays.sort(copy);
+        for (Angajat a : copy) {
+            System.out.println(a);
+        }
+    }
+
+    public void findByDepartment(String numeDept) {
+        logAction("FIND_BY_DEPT", numeDept);
+        boolean found = false;
+        for (Angajat a : angajati) {
+            if (a.getDepartament().nume().equalsIgnoreCase(numeDept)) {
+                System.out.println(a);
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("Niciun angajat în departamentul: " + numeDept);
+        }
+    }
+
+    private void logAction(String action, String target) {
+        AuditEntry entry = new AuditEntry(action, target, LocalDateTime.now().toString());
+        AuditEntry[] newLog = new AuditEntry[auditLog.length + 1];
+        System.arraycopy(auditLog, 0, newLog, 0, auditLog.length);
+        newLog[auditLog.length] = entry;
+        auditLog = newLog;
+    }
+
+    public void printAuditLog() {
+        for (AuditEntry entry : auditLog) {
+            System.out.println(entry);
+        }
+    }
+}
