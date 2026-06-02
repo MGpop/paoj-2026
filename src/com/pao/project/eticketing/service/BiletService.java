@@ -5,6 +5,7 @@ import com.pao.project.eticketing.model.Bilet;
 import com.pao.project.eticketing.model.Client;
 import com.pao.project.eticketing.model.Eveniment;
 import com.pao.project.eticketing.model.TipBilet;
+import com.pao.project.eticketing.repository.BiletRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,12 +19,14 @@ public class BiletService {
     private final Map<String, Bilet> bileteByCod;
     private final Map<Integer, List<Bilet>> biletePeClient;
     private final Map<Integer, List<Client>> clientiPeEveniment;
+    private final BiletRepository biletRepository;
 
     private BiletService() {
         this.bilete = new ArrayList<>();
         this.bileteByCod = new HashMap<>();
         this.biletePeClient = new HashMap<>();
         this.clientiPeEveniment = new HashMap<>();
+        this.biletRepository = new BiletRepository();
     }
 
     public static BiletService getInstance() {
@@ -50,8 +53,9 @@ public class BiletService {
 
         for (int i = 0; i < cantitate; i++) {
             String codBilet = genereazaCodBilet(client, eveniment, tipBilet, i);
-            Bilet bilet = new Bilet(codBilet, client, eveniment, tipBilet);
 
+            Bilet bilet = new Bilet(codBilet, client, eveniment, tipBilet);
+            biletRepository.saveCuTranzactie(bilet);
             bilete.add(bilet);
             bileteByCod.put(codBilet, bilet);
 
